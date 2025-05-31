@@ -15,6 +15,7 @@ import type {
 
 // Screens
 import HomeScreen from '@/screens/HomeScreen';
+import RoomsAndRealmsScreen from '../screens/RoomsAndRealmsScreen'; // Import new screen
 import CollectionScreen from '@/screens/CollectionScreen';
 import ScanScreen from '@/screens/ScanScreen';
 import BattleScreen from '@/screens/BattleScreen';
@@ -100,6 +101,9 @@ const MainTabs: React.FC = () => (
           case 'Profile':
             iconName = 'person';
             break;
+          case 'Realms': // Icon for the new tab
+            iconName = 'explore'; // Or 'public' or any other suitable icon
+            break;
           default:
             iconName = 'help';
         }
@@ -129,6 +133,11 @@ const MainTabs: React.FC = () => (
       options={{ title: 'My Miniatures' }}
     />
     <Tab.Screen name="Scan" component={ScanScreen} />
+    <Tab.Screen
+      name="Realms" // Name for the tab bar
+      component={RoomsAndRealmsScreen}
+      options={{ title: 'Rooms and Realms' }} // Title for the header
+    />
     <Tab.Screen name="Battle" component={BattleStackComponent} />
     <Tab.Screen name="Profile" component={ProfileScreen} />
   </Tab.Navigator>
