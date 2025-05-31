@@ -8,7 +8,8 @@ import type {
   Miniature,
   Battle,
   User,
-  ApiResponse
+  ApiResponse,
+  Quest // Import the Quest type
 } from '../types';
 import type { RootState } from './index';
 
@@ -26,7 +27,7 @@ export const api = createApi({
       return headers;
     },
   }),
-  tagTypes: ['Miniature', 'Battle', 'User', 'Collection'],
+  tagTypes: ['Miniature', 'Battle', 'User', 'Collection', 'Quest'], // Add 'Quest'
   endpoints: (builder) => ({
     // Authentication endpoints
     login: builder.mutation<LoginResponse, LoginRequest>({
@@ -90,6 +91,18 @@ export const api = createApi({
       query: (userId) => `/battles/history/${userId}`,
       providesTags: ['Battle'],
     }),
+
+    // Quest endpoints
+    getQuests: builder.query<ApiResponse<Quest[]>, void>({
+      query: () => '/quests', // Or '/realms/quests'
+      providesTags: (result) =>
+        result && result.data
+          ? [
+              ...result.data.map(({ id }) => ({ type: 'Quest' as const, id })),
+              { type: 'Quest', id: 'LIST' },
+            ]
+          : [{ type: 'Quest', id: 'LIST' }],
+    }),
   }),
 });
 
@@ -102,4 +115,5 @@ export const {
   useGetUserCollectionQuery,
   useCreateBattleMutation,
   useGetBattleHistoryQuery,
+  useGetQuestsQuery, // Export the new hook
 } = api; 

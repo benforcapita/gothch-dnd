@@ -85,6 +85,7 @@ export interface UserProfile {
   battlesLost: number;
   collectibles: number;
   achievements: Achievement[];
+  gold: number;
 }
 
 export interface Achievement {
@@ -166,6 +167,15 @@ export interface ConditionEffect {
 export type BattleType = 'standard' | 'tournament' | 'practice' | 'ranked';
 export type BattleStatus = 'waiting' | 'active' | 'completed' | 'abandoned';
 
+// Quest types
+export interface Quest {
+  id: string;
+  title: string;
+  description: string;
+  goldReward: number;
+  // Future fields could include: type, objectives, prerequisites, experienceReward, itemRewards, etc.
+}
+
 // Navigation types
 export type RootStackParamList = {
   Login: undefined;
@@ -178,6 +188,7 @@ export type MainTabParamList = {
   Scan: undefined;
   Battle: undefined;
   Profile: undefined;
+  RoomsAndRealms: undefined;
 };
 
 export type CollectionStackParamList = {

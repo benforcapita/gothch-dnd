@@ -15,6 +15,7 @@ const initialState: UserState = {
     battlesLost: 0,
     collectibles: 0,
     achievements: [],
+    gold: 0,
   },
   preferences: {
     soundEnabled: true,
@@ -99,6 +100,12 @@ const userSlice = createSlice({
     clearError: (state) => {
       state.error = null;
     },
+    addGold: (state, action: PayloadAction<number>) => {
+      state.profile.gold += action.payload;
+    },
+    spendGold: (state, action: PayloadAction<number>) => {
+      state.profile.gold = Math.max(0, state.profile.gold - action.payload);
+    },
   },
 });
 
@@ -115,6 +122,8 @@ export const {
   incrementCollectibles,
   setError,
   clearError,
+  addGold,
+  spendGold,
 } = userSlice.actions;
 
 // Selectors
@@ -122,6 +131,7 @@ export const selectUser = (state: RootState): User | null => state.user.user;
 export const selectIsAuthenticated = (state: RootState): boolean => state.user.isAuthenticated;
 export const selectUserLevel = (state: RootState): number => state.user.profile.level;
 export const selectUserExperience = (state: RootState): number => state.user.profile.experiencePoints;
+export const selectUserGold = (state: RootState): number => state.user.profile.gold;
 
 export const selectBattleRecord = (state: RootState) => ({
   won: state.user.profile.battlesWon,
