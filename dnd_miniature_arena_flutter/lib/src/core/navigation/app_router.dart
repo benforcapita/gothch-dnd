@@ -13,14 +13,14 @@ import 'package:dnd_miniature_arena_flutter/src/features/rooms_and_realms/presen
 import 'package:dnd_miniature_arena_flutter/src/features/battle/presentation/screens/battle_screen.dart';
 import 'package:dnd_miniature_arena_flutter/src/features/battle/presentation/screens/battle_setup_screen.dart';
 import 'package:dnd_miniature_arena_flutter/src/features/profile/presentation/screens/profile_screen.dart';
+import 'package:dnd_miniature_arena_flutter/src/features/home/presentation/screens/home_tab_content_screen.dart'; // Import HomeTabContentScreen
 
 // Define GlobalKey<NavigatorState> for each nested navigator if needed for deep linking later
 final GlobalKey<NavigatorState> _rootNavigatorKey = GlobalKey<NavigatorState>(debugLabel: 'root');
 // final GlobalKey<NavigatorState> _shellNavigatorKey = GlobalKey<NavigatorState>(debugLabel: 'shell'); // Not strictly needed for simple shell routes like this one
-import 'package:dnd_miniature_arena_flutter/src/features/home/presentation/screens/home_tab_content_screen.dart'; // Import HomeTabContentScreen
 
 
-GoRouter createAppRouter(Ref ref) {
+GoRouter createAppRouter(WidgetRef ref) { // Changed to WidgetRef
   // ValueNotifier to bridge Riverpod state to GoRouter's refreshListenable
   final authStateAsyncNotifier = ValueNotifier<AsyncValue<AuthState>>(
     AsyncValue.data(ref.watch(authProvider))

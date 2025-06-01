@@ -19,13 +19,16 @@ class QuickActionCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    return Expanded( // To make cards take equal space in a Row
-      child: AspectRatio( // To make cards squarish or a defined aspect ratio
-        aspectRatio: 1.2, // Adjust as needed, 1.0 for square
+    // CardTheme properties like elevation, shape, margin are used by default.
+    // The color is overridden by the Container's BoxDecoration for the gradient.
+    return Expanded(
+      child: AspectRatio(
+        aspectRatio: 1.2,
         child: Card(
-          elevation: 4.0,
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12.0)),
-          clipBehavior: Clip.antiAlias, // Important for gradient to respect border radius
+          // elevation: theme.cardTheme.elevation, // Inherited
+          // shape: theme.cardTheme.shape, // Inherited
+          // margin: theme.cardTheme.margin, // Inherited
+          clipBehavior: Clip.antiAlias, // Ensures gradient respects rounded corners
           child: InkWell(
             onTap: onPress,
             child: Container(
@@ -38,22 +41,21 @@ class QuickActionCard extends StatelessWidget {
               ),
               padding: const EdgeInsets.all(16.0),
               child: Column(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween, // Distribute space
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Icon(icon, size: 36.0, color: theme.colorScheme.onPrimary.withOpacity(0.9)),
-                  const Spacer(), // Pushes content to top and bottom
+                  Icon(icon, size: 36.0, color: theme.colorScheme.onPrimary.withOpacity(0.95)), // Assuming gradient is dark enough for onPrimary
+                  const Spacer(),
                   Text(
                     title,
-                    style: theme.textTheme.titleMedium?.copyWith(
-                      fontWeight: FontWeight.bold,
-                      color: theme.colorScheme.onPrimary,
+                    style: theme.textTheme.titleLarge?.copyWith( // Using titleLarge for more emphasis
+                      color: theme.colorScheme.onPrimary, // Text on gradient
                     ),
                   ),
                   Text(
                     subtitle,
-                    style: theme.textTheme.bodySmall?.copyWith(
-                      color: theme.colorScheme.onPrimary.withOpacity(0.8),
+                    style: theme.textTheme.bodyMedium?.copyWith( // Using bodyMedium
+                      color: theme.colorScheme.onPrimary.withOpacity(0.85), // Text on gradient
                     ),
                   ),
                 ],

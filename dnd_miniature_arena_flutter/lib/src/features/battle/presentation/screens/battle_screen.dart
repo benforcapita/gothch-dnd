@@ -10,35 +10,48 @@ class BattleScreen extends ConsumerWidget {
   Widget _buildParticipantCard(BuildContext context, BattleParticipant participant, bool isCurrentTurn) {
     final theme = Theme.of(context);
     return Card(
-      elevation: isCurrentTurn ? 6.0 : 2.0,
-      shape: RoundedRectangleBorder(
+      // Uses theme.cardTheme by default for elevation, shape, margin, color (if not overridden)
+      // color: theme.cardTheme.color?.withOpacity(isCurrentTurn ? 1.0 : 0.8), // Example: slightly change color for current turn
+      shape: RoundedRectangleBorder( // Custom shape or use theme.cardTheme.shape
         borderRadius: BorderRadius.circular(12.0),
-        side: isCurrentTurn ? BorderSide(color: theme.colorScheme.primary, width: 2) : BorderSide.none,
+        side: isCurrentTurn
+            ? BorderSide(color: theme.colorScheme.primary, width: 3)
+            : BorderSide(color: theme.cardTheme.shape is RoundedRectangleBorder ? (theme.cardTheme.shape as RoundedRectangleBorder).side.color : theme.colorScheme.outline.withOpacity(0.5), width: 1),
       ),
       child: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
+          mainAxisAlignment: MainAxisAlignment.center, // Center content
           children: [
-            Text(participant.playerId == 'player1' ? 'Player 1' : 'Player 2', style: theme.textTheme.headlineSmall),
+            Text(
+              participant.playerId == 'player1' ? 'Player 1' : 'Player 2',
+              style: theme.textTheme.headlineSmall?.copyWith(color: theme.colorScheme.onSurface)
+            ),
             const SizedBox(height: 12),
             Image.asset(
               participant.miniature.imageUrl,
-              height: 100,
-              errorBuilder: (c, o, s) => Icon(Icons.shield_outlined, size: 100, color: theme.colorScheme.error),
+              height: 120, // Increased size
+              fit: BoxFit.contain,
+              errorBuilder: (c, o, s) => Icon(Icons.shield_outlined, size: 120, color: theme.colorScheme.error),
             ),
             const SizedBox(height: 12),
-            Text(participant.miniature.name, style: theme.textTheme.titleLarge),
+            Text(
+              participant.miniature.name,
+              style: theme.textTheme.titleLarge?.copyWith(color: theme.colorScheme.onSurface, fontWeight: FontWeight.bold),
+              textAlign: TextAlign.center,
+            ),
             const SizedBox(height: 8),
             Chip(
               label: Text('HP: ${participant.currentHp} / ${participant.miniature.currentHp}', style: theme.textTheme.titleMedium),
-              backgroundColor: theme.colorScheme.surfaceVariant,
+              backgroundColor: theme.chipTheme.backgroundColor ?? theme.colorScheme.surfaceVariant, // Use ChipTheme
+              labelStyle: theme.chipTheme.labelStyle,
             ),
             if (isCurrentTurn) ...[
               const SizedBox(height: 10),
               Chip(
-                label: Text('Current Turn', style: TextStyle(color: theme.colorScheme.onPrimary)),
+                label: Text('Current Turn', style: theme.textTheme.labelLarge?.copyWith(color: theme.colorScheme.onPrimary)),
                 backgroundColor: theme.colorScheme.primary,
-                padding: const EdgeInsets.symmetric(horizontal: 8),
+                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
               )
             ]
           ],
@@ -55,17 +68,17 @@ class BattleScreen extends ConsumerWidget {
 
     if (battleState == null || battleState.status == BattleStatus.setup) {
       return Scaffold(
-        appBar: AppBar(title: const Text('Battle Arena')),
+        appBar: AppBar(title: const Text('Battle Arena')), // Uses appBarTheme
         body: Center(
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
+              Icon(Icons.shield_outlined, size: 60, color: theme.colorScheme.secondary),
+              const SizedBox(height: 16),
               const Text('No active battle or battle is in setup.', style: TextStyle(fontSize: 18)),
               const SizedBox(height: 20),
-              ElevatedButton(
+              ElevatedButton( // Uses elevatedButtonTheme
                 onPressed: () {
-                  // For simplicity, player 1 always picks the first available miniature.
-                  // In a real app, player 1 would select their miniature before this point.
                   final availableMinis = battleNotifier.getAvailableMiniaturesForSetup();
                   if (availableMinis.isNotEmpty) {
                     battleNotifier.startNewBattleSetup(availableMinis.first);
@@ -85,11 +98,13 @@ class BattleScreen extends ConsumerWidget {
 
     if (battleState.status == BattleStatus.finished) {
       return Scaffold(
-        appBar: AppBar(title: const Text('Battle Over')),
+        appBar: AppBar(title: const Text('Battle Over')), // Uses appBarTheme
         body: Center(
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
+              Icon(Icons.emoji_events, size: 80, color: theme.colorScheme.primary),
+              const SizedBox(height: 20),
               Text(
                 'Battle Over!',
                 style: theme.textTheme.headlineMedium?.copyWith(color: theme.colorScheme.primary),
@@ -100,10 +115,9 @@ class BattleScreen extends ConsumerWidget {
                 style: theme.textTheme.headlineSmall,
               ),
               const SizedBox(height: 40),
-              ElevatedButton(
+              ElevatedButton( // Uses elevatedButtonTheme
                 onPressed: () {
                   battleNotifier.endBattle();
-                   // Optionally navigate home or to setup
                   context.go('/home');
                 },
                 child: const Text('End Battle & Go Home'),
@@ -120,17 +134,16 @@ class BattleScreen extends ConsumerWidget {
     final bool isPlayer1Turn = battleState.currentTurnPlayerId == 'player1';
 
     return Scaffold(
-      appBar: AppBar(
+      appBar: AppBar( // Uses appBarTheme
         title: Text('Battle Arena - Turn: ${battleState.currentTurnPlayerId}'),
-        backgroundColor: theme.colorScheme.surfaceContainerHighest,
       ),
       body: Padding(
-        padding: const EdgeInsets.all(16.0),
+        padding: const EdgeInsets.all(16.0), // Consistent screen padding
         child: Column(
           children: [
             Expanded(
               child: Row(
-                crossAxisAlignment: CrossAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.stretch, // Make cards take full height available in Row
                 children: [
                   Expanded(child: _buildParticipantCard(context, player1, isPlayer1Turn)),
                   const SizedBox(width: 16),
@@ -140,14 +153,12 @@ class BattleScreen extends ConsumerWidget {
             ),
             const SizedBox(height: 20),
             if (battleState.status == BattleStatus.ongoing)
-              ElevatedButton.icon(
-                icon: const Icon(Icons.bolt), // Sword icon or similar for attack
-                label: Text(isPlayer1Turn ? 'Player 1 Attack Player 2' : 'Player 2 Attack Player 1'),
-                style: ElevatedButton.styleFrom(
+              ElevatedButton.icon( // Uses elevatedButtonTheme
+                icon: const Icon(Icons.bolt),
+                label: Text(isPlayer1Turn ? 'Player 1 Attack!' : 'Player 2 Attack!'), // Simplified text
+                style: ElevatedButton.styleFrom( // Can override theme for specific buttons
                   padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 16),
-                  textStyle: theme.textTheme.titleLarge,
-                  backgroundColor: theme.colorScheme.primary,
-                  foregroundColor: theme.colorScheme.onPrimary,
+                  textStyle: theme.textTheme.titleLarge?.copyWith(color: theme.colorScheme.onPrimary), // Ensure text color contrast on button
                 ),
                 onPressed: () {
                   if (isPlayer1Turn) {
@@ -157,7 +168,7 @@ class BattleScreen extends ConsumerWidget {
                   }
                 },
               ),
-            const SizedBox(height: 20),
+            const SizedBox(height: 20), // Bottom padding
           ],
         ),
       ),

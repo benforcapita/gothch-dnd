@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:dnd_miniature_arena_flutter/src/features/collection/application/miniature_provider.dart';
 import 'package:dnd_miniature_arena_flutter/src/features/collection/presentation/widgets/miniature_card.dart';
-// Removed unused import 'package:dnd_miniature_arena_flutter/src/features/collection/domain/miniature_model.dart';
 
 class CollectionScreen extends ConsumerWidget {
   const CollectionScreen({super.key});
@@ -13,53 +12,65 @@ class CollectionScreen extends ConsumerWidget {
     final theme = Theme.of(context);
 
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('My Miniatures'),
-        backgroundColor: theme.colorScheme.surfaceContainerHighest, // Or theme.appBarTheme.backgroundColor
-        elevation: 2.0,
+      appBar: AppBar( // Uses appBarTheme from global theme
+        title: const Text('My Miniatures Collection'), // Slightly more descriptive title
       ),
       body: miniatures.isEmpty
           ? Center(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Icon(Icons.info_outline, size: 48, color: theme.colorScheme.onSurface.withOpacity(0.5)),
-                  const SizedBox(height: 16),
-                  Text(
-                    'No miniatures in your collection yet.',
-                    style: theme.textTheme.titleMedium?.copyWith(color: theme.colorScheme.onSurface.withOpacity(0.7)),
-                  ),
-                  const SizedBox(height: 8),
-                  Text(
-                    'Start by scanning some!', // TODO: Add a button to navigate to scan screen
-                    style: theme.textTheme.bodyMedium?.copyWith(color: theme.colorScheme.onSurface.withOpacity(0.5)),
-                  ),
-                ],
+              child: Padding( // Added padding around the empty state message
+                padding: const EdgeInsets.all(24.0),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Icon(Icons.info_outline, size: 60, color: theme.iconTheme.color?.withOpacity(0.6)), // Use iconTheme
+                    const SizedBox(height: 20),
+                    Text(
+                      'Your collection is empty.', // Simplified message
+                      style: theme.textTheme.headlineSmall?.copyWith(color: theme.colorScheme.onBackground.withOpacity(0.8)),
+                      textAlign: TextAlign.center,
+                    ),
+                    const SizedBox(height: 12),
+                    Text(
+                      'Scan your miniatures or add them manually to see them here.', // Updated placeholder text
+                      style: theme.textTheme.bodyLarge?.copyWith(color: theme.colorScheme.onBackground.withOpacity(0.6)),
+                      textAlign: TextAlign.center,
+                    ),
+                    const SizedBox(height: 24),
+                    ElevatedButton.icon( // Uses elevatedButtonTheme
+                      icon: const Icon(Icons.qr_code_scanner),
+                      label: const Text('Scan First Mini'),
+                      onPressed: () {
+                        // Assuming '/scan' route is set up in go_router
+                        // context.go('/scan');
+                        // For now, as go_router isn't directly available without context.go from a widget that has it,
+                        // this button is illustrative. In a real app, ensure context is available or use a callback.
+                         ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(content: Text('Navigate to Scan Screen (placeholder action)'))
+                        );
+                      },
+                    )
+                  ],
+                ),
               ),
             )
           : GridView.builder(
-              padding: const EdgeInsets.all(12.0),
+              padding: const EdgeInsets.all(16.0), // Consistent screen padding
               gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                crossAxisCount: 2, // Number of columns
-                childAspectRatio: 0.75, // Aspect ratio of the cards (width / height)
-                crossAxisSpacing: 12.0, // Horizontal spacing
-                mainAxisSpacing: 12.0,  // Vertical spacing
+                crossAxisCount: 2,
+                childAspectRatio: 0.70, // Adjusted for potentially more text in card
+                crossAxisSpacing: 16.0,
+                mainAxisSpacing: 16.0,
               ),
               itemCount: miniatures.length,
               itemBuilder: (context, index) {
                 final miniature = miniatures[index];
-                return MiniatureCard(miniature: miniature);
+                return MiniatureCard(miniature: miniature); // MiniatureCard already reviewed
               },
             ),
-      // TODO: Add a FloatingActionButton to add miniatures manually or navigate to scan screen
+      // Example for a FAB, would use theme.floatingActionButtonTheme if defined
       // floatingActionButton: FloatingActionButton(
-      //   onPressed: () {
-      //     // Example: context.go('/scan');
-      //     // Or show a dialog to add manually
-      //   },
-      //   child: const Icon(Icons.add),
-      //   backgroundColor: theme.colorScheme.primary,
-      //   foregroundColor: theme.colorScheme.onPrimary,
+      //   onPressed: () => context.go('/scan'),
+      //   child: const Icon(Icons.add_a_photo_outlined),
       // ),
     );
   }

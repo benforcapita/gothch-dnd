@@ -39,6 +39,8 @@ dependencies:
   hooks_riverpod: ^2.5.1 # Check for latest version
   mobile_scanner: ^5.1.0 # Or latest
   permission_handler: ^11.3.1 # Or latest
+  dio: ^5.4.3+1 # Or latest
+  flutter_secure_storage: ^9.2.2 # Or latest
 
 dev_dependencies:
   flutter_test:
@@ -52,6 +54,7 @@ dev_dependencies:
   flutter_lints: ^5.0.0
   riverpod_generator: ^2.4.0 # Check for latest version
   build_runner: ^2.4.11 # Check for latest version
+  mockito: ^5.4.4 # Or latest
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
