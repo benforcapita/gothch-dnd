@@ -1,10 +1,10 @@
+import { useGetQuestsQuery } from '@/store/api';
+import { addGold, selectUserGold } from '@/store/slices/userSlice';
+import { Quest } from '@/types';
+import { colors } from '@/utils/theme';
 import React from 'react';
 import { View, Text, StyleSheet, Button, FlatList, ActivityIndicator } from 'react-native';
 import { useSelector, useDispatch } from 'react-redux';
-import { selectUserGold, addGold } from '../../store/slices/userSlice';
-import { useGetQuestsQuery } from '../../store/api';
-import { colors } from '../../utils/theme'; // Assuming theme.ts or theme.js exists
-import type { Quest } from '../../types'; // Import Quest type
 
 const RoomsAndRealmsScreen: React.FC = () => {
   const userGold = useSelector(selectUserGold);

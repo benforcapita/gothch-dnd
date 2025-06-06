@@ -8,7 +8,7 @@ import {
   Modal,
   Vibration,
 } from 'react-native';
-import { BarCodeScanner, BarCodeScannerResult } from 'expo-barcode-scanner';
+// import { BarCodeScanner, BarCodeScannerResult } from 'expo-barcode-scanner';
 import { useDispatch } from 'react-redux';
 import { LinearGradient } from 'expo-linear-gradient';
 import Icon from 'react-native-vector-icons/MaterialIcons';
@@ -22,6 +22,12 @@ import type { MainTabParamList, QRMiniatureData, Miniature } from '../types';
 
 type ScanScreenNavigationProp = BottomTabNavigationProp<MainTabParamList, 'Scan'>;
 
+// Temporary type definition for BarCodeScannerResult
+type BarCodeScannerResult = {
+  type: string;
+  data: string;
+};
+
 const ScanScreen: React.FC = () => {
   const navigation = useNavigation<ScanScreenNavigationProp>();
   const [hasPermission, setHasPermission] = useState<boolean | null>(null);
@@ -31,10 +37,12 @@ const ScanScreen: React.FC = () => {
   const dispatch = useDispatch();
 
   useEffect(() => {
-    (async () => {
-      const { status } = await BarCodeScanner.requestPermissionsAsync();
-      setHasPermission(status === 'granted');
-    })();
+    // Temporarily disable camera permission request
+    setHasPermission(false);
+    // (async () => {
+    //   const { status } = await BarCodeScanner.requestPermissionsAsync();
+    //   setHasPermission(status === 'granted');
+    // })();
   }, []);
 
   const handleBarCodeScanned = ({ type, data }: BarCodeScannerResult) => {
@@ -189,73 +197,48 @@ const ScanScreen: React.FC = () => {
   if (hasPermission === false) {
     return (
       <View style={styles.centerContainer}>
-        <Icon name="camera-alt" size={64} color={colors.textMuted} />
-        <Text style={styles.message}>No access to camera</Text>
+        <Icon name="qr-code-scanner" size={64} color={colors.textMuted} />
+        <Text style={styles.message}>Barcode Scanning Temporarily Disabled</Text>
         <Text style={styles.submessage}>
-          Please enable camera access in your device settings to scan QR codes.
+          Barcode scanning requires a development build. This feature will be available once a custom build is created.
         </Text>
+        <TouchableOpacity
+          style={styles.rescanButton}
+          onPress={() => navigation.navigate('Collection')}
+        >
+          <LinearGradient
+            colors={[colors.primary, colors.secondary]}
+            style={styles.rescanButtonGradient}
+          >
+            <Icon name="collections" size={24} color={colors.text} />
+            <Text style={styles.rescanButtonText}>View Collection</Text>
+          </LinearGradient>
+        </TouchableOpacity>
       </View>
     );
   }
 
   return (
     <View style={styles.container}>
-      <BarCodeScanner
-        onBarCodeScanned={scanned ? undefined : handleBarCodeScanned}
-        style={styles.camera}
-      />
-      
-      {/* Overlay UI */}
-      <View style={styles.overlay}>
-        {/* Header */}
-        <View style={styles.header}>
-          <Text style={styles.title}>Scan</Text>
-          <Text style={styles.subtitle}>
-            Scan the QR code on the miniature's packaging to add it to your collection.
-          </Text>
-        </View>
-
-        {/* Scanning Frame */}
-        <View style={styles.scanningArea}>
-          <View style={styles.scanFrame}>
-            <View style={[styles.corner, styles.topLeft]} />
-            <View style={[styles.corner, styles.topRight]} />
-            <View style={[styles.corner, styles.bottomLeft]} />
-            <View style={[styles.corner, styles.bottomRight]} />
-            
-            {!scanned && (
-              <View style={styles.scanningLine}>
-                <LinearGradient
-                  colors={[colors.primary, 'transparent']}
-                  style={styles.scanningLineGradient}
-                />
-              </View>
-            )}
-          </View>
-        </View>
-
-        {/* Instructions */}
-        <View style={styles.instructions}>
-          <Text style={styles.instructionText}>
-            Position the QR code within the frame
-          </Text>
-        </View>
-
-        {/* Rescan Button */}
-        {scanned && (
-          <TouchableOpacity
-            style={styles.rescanButton}
-            onPress={() => setScanned(false)}
+      {/* Camera placeholder - barcode scanner disabled */}
+      <View style={styles.centerContainer}>
+        <Icon name="qr-code-scanner" size={64} color={colors.textMuted} />
+        <Text style={styles.message}>Barcode Scanning Temporarily Disabled</Text>
+        <Text style={styles.submessage}>
+          Barcode scanning requires a development build. This feature will be available once a custom build is created.
+        </Text>
+        <TouchableOpacity
+          style={styles.rescanButton}
+          onPress={() => navigation.navigate('Collection')}
+        >
+          <LinearGradient
+            colors={[colors.primary, colors.secondary]}
+            style={styles.rescanButtonGradient}
           >
-            <LinearGradient
-              colors={[colors.primary, colors.secondary]}
-              style={styles.rescanButtonGradient}
-            >
-              <Icon name="refresh" size={24} color={colors.text} />
-              <Text style={styles.rescanButtonText}>Scan Again</Text>
-            </LinearGradient>
-          </TouchableOpacity>
-        )}
+            <Icon name="collections" size={24} color={colors.text} />
+            <Text style={styles.rescanButtonText}>View Collection</Text>
+          </LinearGradient>
+        </TouchableOpacity>
       </View>
 
       <MiniaturePreviewModal />

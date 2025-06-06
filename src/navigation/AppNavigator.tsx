@@ -101,7 +101,7 @@ const MainTabs: React.FC = () => (
           case 'Profile':
             iconName = 'person';
             break;
-          case 'Realms': // Icon for the new tab
+          case 'RoomsAndRealms': // Icon for the tab
             iconName = 'explore'; // Or 'public' or any other suitable icon
             break;
           default:
@@ -115,9 +115,19 @@ const MainTabs: React.FC = () => (
       tabBarStyle: {
         backgroundColor: colors.surface,
         borderTopColor: colors.border,
-        paddingBottom: 8,
-        paddingTop: 8,
-        height: 60,
+        paddingBottom: 16,
+        paddingTop: 12,
+        height: 80,
+        marginBottom: 10,
+        borderRadius: 16,
+        marginHorizontal: 16,
+        position: 'absolute',
+        bottom: 20,
+        elevation: 8,
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 4 },
+        shadowOpacity: 0.3,
+        shadowRadius: 8,
       },
       tabBarLabelStyle: {
         fontSize: 12,
@@ -134,7 +144,7 @@ const MainTabs: React.FC = () => (
     />
     <Tab.Screen name="Scan" component={ScanScreen} />
     <Tab.Screen
-      name="Realms" // Name for the tab bar
+      name="RoomsAndRealms" // Name for the tab bar
       component={RoomsAndRealmsScreen}
       options={{ title: 'Rooms and Realms' }} // Title for the header
     />
