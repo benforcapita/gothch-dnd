@@ -74,8 +74,12 @@ export interface User {
   id: string;
   username: string;
   email: string;
+  level?: number;
+  experience?: number;
+  gold?: number;
   created_at?: string;
   last_login?: string;
+  updated_at?: string;
 }
 
 export interface UserProfile {
@@ -188,7 +192,6 @@ export type MainTabParamList = {
   Scan: undefined;
   Battle: undefined;
   Profile: undefined;
-  RoomsAndRealms: undefined;
 };
 
 export type CollectionStackParamList = {

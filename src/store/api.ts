@@ -13,7 +13,7 @@ import type {
 } from '../types';
 import type { RootState } from './index';
 
-const baseUrl = __DEV__ ? 'http://localhost:3000/api' : 'https://api.dndminiaturearena.com';
+const baseUrl = __DEV__ ? 'http://localhost:3001/api' : 'https://api.dndminiaturearena.com';
 
 export const api = createApi({
   reducerPath: 'api',
@@ -103,6 +103,34 @@ export const api = createApi({
             ]
           : [{ type: 'Quest', id: 'LIST' }],
     }),
+
+    // User profile endpoint
+    getUserProfile: builder.query<ApiResponse<{
+      user: User;
+      preferences: any;
+      battleRecord: any;
+      achievements: any[];
+      collectionStats: any;
+      completedQuests: any[];
+      userMiniatures: any[];
+    }>, string>({
+      query: (userId) => `/users/${userId}/profile`,
+      providesTags: (result, error, userId) => [
+        { type: 'User', id: userId },
+        { type: 'Collection', id: userId },
+        { type: 'Quest', id: 'LIST' }
+      ],
+    }),
+
+    // Update user preferences
+    updateUserPreferences: builder.mutation<ApiResponse<any>, { userId: string; preferences: any }>({
+      query: ({ userId, preferences }) => ({
+        url: `/users/${userId}/preferences`,
+        method: 'PUT',
+        body: preferences,
+      }),
+      invalidatesTags: (result, error, { userId }) => [{ type: 'User', id: userId }],
+    }),
   }),
 });
 
@@ -116,4 +144,6 @@ export const {
   useCreateBattleMutation,
   useGetBattleHistoryQuery,
   useGetQuestsQuery, // Export the new hook
+  useGetUserProfileQuery, // Export the new hook
+  useUpdateUserPreferencesMutation, // Export the new hook
 } = api; 

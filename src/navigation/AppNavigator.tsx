@@ -15,7 +15,6 @@ import type {
 
 // Screens
 import HomeScreen from '@/screens/HomeScreen';
-import RoomsAndRealmsScreen from '../screens/RoomsAndRealmsScreen'; // Import new screen
 import CollectionScreen from '@/screens/CollectionScreen';
 import ScanScreen from '@/screens/ScanScreen';
 import BattleScreen from '@/screens/BattleScreen';
@@ -101,9 +100,6 @@ const MainTabs: React.FC = () => (
           case 'Profile':
             iconName = 'person';
             break;
-          case 'RoomsAndRealms': // Icon for the tab
-            iconName = 'explore'; // Or 'public' or any other suitable icon
-            break;
           default:
             iconName = 'help';
         }
@@ -115,17 +111,18 @@ const MainTabs: React.FC = () => (
       tabBarStyle: {
         backgroundColor: colors.surface,
         borderTopColor: colors.border,
-        paddingBottom: 16,
+        paddingBottom: 20,
         paddingTop: 12,
-        height: 80,
-        marginBottom: 10,
-        borderRadius: 16,
-        marginHorizontal: 16,
+        height: 85,
+        borderTopLeftRadius: 16,
+        borderTopRightRadius: 16,
         position: 'absolute',
-        bottom: 20,
+        bottom: 0,
+        left: 0,
+        right: 0,
         elevation: 8,
         shadowColor: '#000',
-        shadowOffset: { width: 0, height: 4 },
+        shadowOffset: { width: 0, height: -2 },
         shadowOpacity: 0.3,
         shadowRadius: 8,
       },
@@ -143,11 +140,6 @@ const MainTabs: React.FC = () => (
       options={{ title: 'My Miniatures' }}
     />
     <Tab.Screen name="Scan" component={ScanScreen} />
-    <Tab.Screen
-      name="RoomsAndRealms" // Name for the tab bar
-      component={RoomsAndRealmsScreen}
-      options={{ title: 'Rooms and Realms' }} // Title for the header
-    />
     <Tab.Screen name="Battle" component={BattleStackComponent} />
     <Tab.Screen name="Profile" component={ProfileScreen} />
   </Tab.Navigator>

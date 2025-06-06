@@ -5,16 +5,20 @@ import {
   StyleSheet,
   ScrollView,
   TouchableOpacity,
+  FlatList,
+  ActivityIndicator,
+  Button,
 } from 'react-native';
-import { useSelector } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
 import { LinearGradient } from 'expo-linear-gradient';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import { useNavigation } from '@react-navigation/native';
 import type { BottomTabNavigationProp } from '@react-navigation/bottom-tabs';
 
 import { colors, spacing, typography, shadows } from '@/utils/theme';
-import { selectUser, selectUserLevel, selectBattleRecord } from '@/store/slices/userSlice';
-import type { MainTabParamList } from '@/types';
+import { selectUser, selectUserLevel, selectBattleRecord, selectUserGold, addGold } from '@/store/slices/userSlice';
+import { useGetQuestsQuery } from '@/store/api';
+import type { MainTabParamList, Quest } from '@/types';
 
 type HomeScreenNavigationProp = BottomTabNavigationProp<MainTabParamList, 'Home'>;
 
@@ -34,9 +38,16 @@ interface StatCardProps {
 
 const HomeScreen: React.FC = () => {
   const navigation = useNavigation<HomeScreenNavigationProp>();
+  const dispatch = useDispatch();
   const user = useSelector(selectUser);
   const userLevel = useSelector(selectUserLevel);
   const battleRecord = useSelector(selectBattleRecord);
+  const userGold = useSelector(selectUserGold);
+  const { data: questsData, isLoading, error } = useGetQuestsQuery();
+
+  const handleCompleteQuest = (goldReward: number) => {
+    dispatch(addGold(goldReward));
+  };
 
   const QuickActionCard: React.FC<QuickActionCardProps> = ({ title, subtitle, icon, onPress, gradient }) => (
     <TouchableOpacity style={styles.quickActionCard} onPress={onPress}>
@@ -61,6 +72,19 @@ const HomeScreen: React.FC = () => {
     </View>
   );
 
+  const renderQuestItem = ({ item }: { item: Quest }) => (
+    <View style={styles.questItemContainer}>
+      <Text style={styles.questTitle}>{item.title}</Text>
+      <Text style={styles.questDescription}>{item.description}</Text>
+      <Text style={styles.questReward}>Reward: {item.goldReward} Gold</Text>
+      <Button 
+        title="Complete Quest" 
+        onPress={() => handleCompleteQuest(item.goldReward)} 
+        color={colors.primary} 
+      />
+    </View>
+  );
+
   return (
     <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
       {/* Header Section */}
@@ -74,6 +98,17 @@ const HomeScreen: React.FC = () => {
           <Text style={styles.levelText}>Level {userLevel} Collector</Text>
         </View>
       </LinearGradient>
+
+      {/* Gold Section */}
+      <View style={styles.goldSection}>
+        <View style={styles.goldCard}>
+          <Icon name="monetization-on" size={32} color={colors.warning} />
+          <View style={styles.goldContent}>
+            <Text style={styles.goldLabel}>Current Gold</Text>
+            <Text style={styles.goldValue}>{userGold}</Text>
+          </View>
+        </View>
+      </View>
 
       {/* Stats Section */}
       <View style={styles.statsSection}>
@@ -95,6 +130,26 @@ const HomeScreen: React.FC = () => {
             icon="trending-up"
           />
         </View>
+      </View>
+
+      {/* Available Quests Section */}
+      <View style={styles.questSection}>
+        <Text style={styles.sectionTitle}>Available Quests</Text>
+        {isLoading ? (
+          <ActivityIndicator size="large" color={colors.primary} />
+        ) : error ? (
+          <Text style={styles.errorText}>Error loading quests. Please try again later.</Text>
+        ) : questsData && questsData.data && questsData.data.length > 0 ? (
+          <FlatList
+            data={questsData.data.slice(0, 3)} // Show only first 3 quests on home
+            renderItem={renderQuestItem}
+            keyExtractor={(item) => item.id}
+            scrollEnabled={false}
+            style={styles.questList}
+          />
+        ) : (
+          <Text style={styles.noQuestsText}>No quests available at the moment.</Text>
+        )}
       </View>
 
       {/* Quick Actions */}
@@ -187,6 +242,34 @@ const styles = StyleSheet.create({
     paddingVertical: spacing.xs,
     borderRadius: 16,
   },
+  goldSection: {
+    paddingHorizontal: spacing.lg,
+    paddingVertical: spacing.md,
+  },
+  goldCard: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    padding: spacing.lg,
+    borderRadius: 12,
+    backgroundColor: colors.surface,
+    borderWidth: 2,
+    borderColor: colors.warning,
+    ...shadows.medium,
+  },
+  goldContent: {
+    marginLeft: spacing.md,
+    flex: 1,
+  },
+  goldLabel: {
+    ...typography.bodySmall,
+    color: colors.text,
+    opacity: 0.9,
+  },
+  goldValue: {
+    ...typography.h2,
+    color: colors.text,
+    fontWeight: 'bold',
+  },
   statsSection: {
     padding: spacing.lg,
   },
@@ -218,6 +301,48 @@ const styles = StyleSheet.create({
     color: colors.textSecondary,
     marginTop: spacing.xs,
     textAlign: 'center',
+  },
+  questSection: {
+    paddingHorizontal: spacing.lg,
+    paddingBottom: spacing.lg,
+  },
+  questList: {
+    maxHeight: 300,
+  },
+  questItemContainer: {
+    backgroundColor: colors.surface,
+    padding: spacing.md,
+    borderRadius: 8,
+    marginBottom: spacing.sm,
+    borderWidth: 1,
+    borderColor: colors.border,
+  },
+  questTitle: {
+    ...typography.h4,
+    color: colors.text,
+    marginBottom: spacing.xs,
+  },
+  questDescription: {
+    ...typography.bodySmall,
+    color: colors.textSecondary,
+    marginBottom: spacing.sm,
+  },
+  questReward: {
+    ...typography.bodySmall,
+    color: colors.primary,
+    marginBottom: spacing.sm,
+  },
+  errorText: {
+    ...typography.body,
+    color: colors.error,
+    textAlign: 'center',
+    marginTop: spacing.md,
+  },
+  noQuestsText: {
+    ...typography.body,
+    color: colors.textSecondary,
+    textAlign: 'center',
+    marginTop: spacing.md,
   },
   quickActionsSection: {
     paddingHorizontal: spacing.lg,
